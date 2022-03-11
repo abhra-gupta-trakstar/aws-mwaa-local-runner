@@ -1,0 +1,131 @@
+{
+  "ipcMode": null,
+  "executionRoleArn": "arn:aws:iam::944465418092:role/mwaa-cicd-ecs-ExecutionRole-1F4L6Z4QSZDJB",
+  "containerDefinitions": [
+    {
+      "dnsSearchDomains": [],
+      "environmentFiles": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "secretOptions": [],
+        "options": {
+          "awslogs-group": "mwaa-cicd-ecs",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "entryPoint": [],
+      "portMappings": [
+        {
+          "hostPort": 8080,
+          "protocol": "tcp",
+          "containerPort": 8080
+        }
+      ],
+      "command": [],
+      "linuxParameters": null,
+      "cpu": 0,
+      "environment": [],
+      "resourceRequirements": null,
+      "ulimits": [],
+      "dnsServers": [],
+      "mountPoints": [],
+      "workingDirectory": null,
+      "secrets": [],
+      "dockerSecurityOptions": [],
+      "memory": null,
+      "memoryReservation": null,
+      "volumesFrom": [],
+      "stopTimeout": null,
+      "image": "944465418092.dkr.ecr.us-east-1.amazonaws.com/mwaa-cicd:2.0.2",
+      "startTimeout": null,
+      "firelensConfiguration": null,
+      "dependsOn": null,
+      "disableNetworking": null,
+      "interactive": null,
+      "healthCheck": null,
+      "essential": true,
+      "links": [],
+      "hostname": null,
+      "extraHosts": [],
+      "pseudoTerminal": null,
+      "user": null,
+      "readonlyRootFilesystem": null,
+      "dockerLabels": {},
+      "systemControls": [],
+      "privileged": null,
+      "name": "mwaa-cicd-ecs"
+    }
+  ],
+  "placementConstraints": [],
+  "memory": "4096",
+  "taskRoleArn": null,
+  "compatibilities": [
+    "EC2",
+    "FARGATE"
+  ],
+  "taskDefinitionArn": "arn:aws:ecs:us-east-1:944465418092:task-definition/mwaa-cicd-ecs:1",
+  "family": "mwaa-cicd-ecs",
+  "requiresAttributes": [
+    {
+      "targetId": null,
+      "targetType": null,
+      "value": null,
+      "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+    },
+    {
+      "targetId": null,
+      "targetType": null,
+      "value": null,
+      "name": "ecs.capability.execution-role-awslogs"
+    },
+    {
+      "targetId": null,
+      "targetType": null,
+      "value": null,
+      "name": "com.amazonaws.ecs.capability.ecr-auth"
+    },
+    {
+      "targetId": null,
+      "targetType": null,
+      "value": null,
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+    },
+    {
+      "targetId": null,
+      "targetType": null,
+      "value": null,
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.17"
+    },
+    {
+      "targetId": null,
+      "targetType": null,
+      "value": null,
+      "name": "ecs.capability.execution-role-ecr-pull"
+    },
+    {
+      "targetId": null,
+      "targetType": null,
+      "value": null,
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+    },
+    {
+      "targetId": null,
+      "targetType": null,
+      "value": null,
+      "name": "ecs.capability.task-eni"
+    }
+  ],
+  "pidMode": null,
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "networkMode": "awsvpc",
+  "runtimePlatform": null,
+  "cpu": "2048",
+  "revision": 1,
+  "status": "ACTIVE",
+  "inferenceAccelerators": null,
+  "proxyConfiguration": null,
+  "volumes": []
+}
