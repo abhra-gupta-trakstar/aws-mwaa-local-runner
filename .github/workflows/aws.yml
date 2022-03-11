@@ -1,0 +1,72 @@
+name: Deploy to Amazon ECS
+
+on:
+ push:
+  branches:
+   - main
+
+env:
+  AWS_REGION: us-east-1               # set this to your AWS region, e.g. us-west-2
+  ECR_REPOSITORY: mwaa-cicd           # the Amazon ECR repository name
+  ECS_SERVICE: mwaa-cicd-ecs          # the Amazon ECS service name
+  ECS_CLUSTER: mwaa-cicd-ecs          # the name of the Amazon ECS cluster name
+  ECS_TASK_DEFINITION: task-def.json  # the path to the Amazon ECS task definition
+  CONTAINER_NAME: mwaa-cicd-ecs       # the name of the Amazon ECS container
+  IMAGE_TAG: '2.0'                    # the Amazon ECR container image tag
+  LOCAL_TAG: amazon/mwaa-local
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest # the GitHub Action VM Runner to execute the workflow
+    permissions:
+      packages: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          # aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }} # add if you use an AWS session token
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ env.IMAGE_TAG }}
+          LOCAL_TAG: ${{ env.LOCAL_TAG }}
+        run: |
+          # Build the docker container and push it to ECR so that it can be deployed to ECS.
+          ./mwaa-local-env build-image
+          docker tag $LOCAL_TAG:$IMAGE_TAG ${{ secrets.ECR_REPOSITORY_URI }}:$IMAGE_TAG
+          docker push ${{ secrets.ECR_REPOSITORY_URI }}:$IMAGE_TAG
+          echo "::set-output name=image::${{ secrets.ECR_REPOSITORY_URI }}:$IMAGE_TAG"
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
