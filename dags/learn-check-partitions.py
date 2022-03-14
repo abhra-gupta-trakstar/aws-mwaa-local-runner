@@ -10,7 +10,6 @@ import boto3
 from airflow.operators.python import PythonOperator
 from airflow.operators.dummy import DummyOperator
 from airflow.operators.email import EmailOperator
-from airflow.providers.slack.operators.slack_webhook import SlackWebhookOperator
 env_name = Variable.get("deploy_environment")
 
 
@@ -82,32 +81,32 @@ def _get_message(action, table_list) -> str:
     return "TS-Learn-Check-Partitions-Daily DAG {} for {} on {} Mountain Time".format(action, table_list, mt_time)
 
 
-send_slack_success_notification_account_table = SlackWebhookOperator(
-    task_id="send_slack_success_notification_account_table",
-    trigger_rule='all_success',
-    http_conn_id="slack_conn",
-    message=_get_message("completed successfully", "account_table"),
-    channel="#airflow-monitoring-{}".format(env_name),
-    dag=dag
-)
+# send_slack_success_notification_account_table = SlackWebhookOperator(
+#     task_id="send_slack_success_notification_account_table",
+#     trigger_rule='all_success',
+#     http_conn_id="slack_conn",
+#     message=_get_message("completed successfully", "account_table"),
+#     channel="#airflow-monitoring-{}".format(env_name),
+#     dag=dag
+# )
 
-send_slack_success_notification_course_table = SlackWebhookOperator(
-    task_id="send_slack_success_notification_course_table",
-    trigger_rule='all_success',
-    http_conn_id="slack_conn",
-    message=_get_message("completed successfully", "course_table"),
-    channel="#airflow-monitoring-{}".format(env_name),
-    dag=dag
-)
+# send_slack_success_notification_course_table = SlackWebhookOperator(
+#     task_id="send_slack_success_notification_course_table",
+#     trigger_rule='all_success',
+#     http_conn_id="slack_conn",
+#     message=_get_message("completed successfully", "course_table"),
+#     channel="#airflow-monitoring-{}".format(env_name),
+#     dag=dag
+# )
 
-send_slack_success_notification_rating_table = SlackWebhookOperator(
-    task_id="send_slack_success_notification_rating_table",
-    trigger_rule='all_success',
-    http_conn_id="slack_conn",
-    message=_get_message("completed successfully", "rating_table"),
-    channel="#airflow-monitoring-{}".format(env_name),
-    dag=dag
-)
+# send_slack_success_notification_rating_table = SlackWebhookOperator(
+#     task_id="send_slack_success_notification_rating_table",
+#     trigger_rule='all_success',
+#     http_conn_id="slack_conn",
+#     message=_get_message("completed successfully", "rating_table"),
+#     channel="#airflow-monitoring-{}".format(env_name),
+#     dag=dag
+# )
 
 send_slack_failure_notification_account_table = SlackWebhookOperator(
             task_id="send_slack_failure_notification_account_table",
@@ -173,7 +172,7 @@ for table in course_table:
     course_table_partition_check_begin >> python_task >> course_table_partition_check_end
 
 
-account_table_partition_check_end >> send_slack_success_notification_account_table >> send_slack_failure_notification_account_table >> send_email_notification_account_table
-course_table_partition_check_end >> send_slack_success_notification_course_table >> send_slack_failure_notification_course_table >> send_email_notification_course_table
+account_table_partition_check_end >> send_slack_failure_notification_account_table >> send_email_notification_account_table
+course_table_partition_check_end >> send_slack_failure_notification_course_table >> send_email_notification_course_table
 
 
