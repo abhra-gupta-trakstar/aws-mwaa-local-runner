@@ -1,14 +1,9 @@
-from datetime import timedelta , datetime
-import pytz
+from datetime import timedelta 
 import airflow  
 from airflow import AirflowException
 from airflow import DAG  
-from airflow.models import Variable
-from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator
 from airflow.operators.dummy import DummyOperator
-from airflow.operators.email import EmailOperator
-from airflow.providers.slack.operators.slack_webhook import SlackWebhookOperator
 from airflow.utils.trigger_rule import TriggerRule
 
 
