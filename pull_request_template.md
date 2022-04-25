@@ -3,22 +3,30 @@
 
 ## Context
 
+
 ## Changes introduced
+
+
 
 ## Visual changes
 N/A
 
+
 ## Jira card
 NA
+
 
 ## Links to tickets/issues
 NA
 
+
 ## Reference links
 N/A
 
+
 ### Additional notes for reviewers
 NA
+
 
 ### Test coverage
  - [ ] Manual Tests
