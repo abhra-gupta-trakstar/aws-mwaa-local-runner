@@ -4,11 +4,7 @@ import airflow
 import time
 from airflow import DAG  
 from airflow.operators.dummy import DummyOperator
-from airflow.operators.python_operator import PythonOperator
-from awsairflowlib.operators.aws_glue_job_operator import AWSGlueJobOperator
-from airflow.providers.slack.operators.slack_webhook import SlackWebhookOperator
-from airflow.models import Variable
-from airflow.operators.email import EmailOperator
+
 
 default_args = {  
     'owner': 'Abhra',
