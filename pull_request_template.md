@@ -1,44 +1,27 @@
-Pull Request Name: [JIRA TICKET ID] - [Description of Request]
-----------------------------------------------------------------------------------------------------------------------------------------------------
-
-Context
-----------------------------------------------------------------------------------------------------------------------------------------------------
-[Describe the Feature Enhancement or Bug Identified]
+<!-- Pull Request Name: [JIRA TICKET ID] - [Description of Request] -->
 
 
-Changes introduced
-----------------------------------------------------------------------------------------------------------------------------------------------------
-[Describe the code changes encapsulated in the PR]
+## Context
 
+## Changes introduced
 
-Visual changes
-----------------------------------------------------------------------------------------------------------------------------------------------------
-[Include any screenshots relevant to the changes]
+## Visual changes
+N/A
 
+## Jira card
+NA
 
-Jira card
-----------------------------------------------------------------------------------------------------------------------------------------------------
-[Include link to ticket for tracking work]
+## Links to tickets/issues
+NA
 
+## Reference links
+N/A
 
-Links to tickets/issues
-----------------------------------------------------------------------------------------------------------------------------------------------------
-[Include links to any related jira tickets or issues]
+### Additional notes for reviewers
+NA
 
-
-Reference links
-----------------------------------------------------------------------------------------------------------------------------------------------------
-[Include any links to references that will help reviewer assess changes]
-
-
-Additional notes for reviewers
-----------------------------------------------------------------------------------------------------------------------------------------------------
-[Include any additional notes for reviewer]
-
-
-Test coverage
-----------------------------------------------------------------------------------------------------------------------------------------------------
-[   ] Manual Tests
-[   ] Unit Tests
-[   ] Integration Tests
-[   ] E2E Tests
+### Test coverage
+ - [ ] Manual Tests
+ - [ ] Unit Tests
+ - [ ] Integration Tests
+ - [ ] E2E Tests
