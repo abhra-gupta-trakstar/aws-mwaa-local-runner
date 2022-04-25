@@ -30,5 +30,5 @@ def _get_message(action) -> str:
     mt_time = datetime.now(MT)
     return "TS-SalesForce-Stage-To-Raw-And-Raw-To-Processed-Daily DAG {} AT {} Mountain Time".format(action, mt_time)
 
-begin_DAG = DummyOperator(task_id='begin_DAG_{}'.format({{ dag.dag_id }}), dag=dag)
+begin_DAG = DummyOperator(task_id='begin_DAG_{{ dag.dag_id }}', dag=dag)
 begin_DAG
