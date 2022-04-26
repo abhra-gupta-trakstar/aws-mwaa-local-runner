@@ -4,9 +4,9 @@ import airflow
 from airflow import DAG  
 from airflow.operators.dummy import DummyOperator
 from awsairflowlib.operators.aws_glue_job_operator import AWSGlueJobOperator
-from airflow.providers.slack.operators.slack_webhook import SlackWebhookOperator
 from airflow.models import Variable
 from airflow.operators.email import EmailOperator
+from airflow.operators.python import PythonOperator
 
 
 env_name = Variable.get("deploy_environment")
@@ -44,32 +44,9 @@ def _get_message(action) -> str:
     mt_time = datetime.now(MT)
     return "TS-Learn-Source-To-Stage-Daily DAG {} on {} Mountain Time".format(action, mt_time)
 
-send_slack_success_notification = SlackWebhookOperator(
-        task_id="send_slack_success_notification",
-        trigger_rule='all_success',
-        http_conn_id="slack_conn",
-        message=_get_message("completed successfully"),
-        channel="#airflow-monitoring-{}".format(env_name),
-        dag=dag
-    )
 
-send_slack_failure_notification = SlackWebhookOperator(
-        task_id="send_slack_failure_notification",
-        trigger_rule='one_failed',
-        http_conn_id="slack_conn",
-        message=_get_message("failed"),
-        channel="#airflow-monitoring-{}".format(env_name),
-        dag=dag
-    )
     
 end_task = DummyOperator(task_id='end_task', dag=dag)
 
-send_email_notification = EmailOperator(
-        task_id="send_Email",
-        trigger_rule='one_success',
-        to=["abhra.gupta@trakstar.com", "brian.kasen@trakstar.com"],
-        subject='TS-Learn-Source-To-Stage-Daily',
-        html_content="TS-Learn-Source-To-Stage-Daily DAG has failed",
-        dag=dag
-    )
-start_task >> glue_task >> end_task >> send_slack_success_notification >> send_slack_failure_notification >> send_email_notification
+
+start_task >> glue_task >> end_task
