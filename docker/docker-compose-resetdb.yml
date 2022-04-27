@@ -27,7 +27,7 @@ services:
         volumes:
             - ${PWD}/dags:/usr/local/airflow/dags
             - ${PWD}/plugins:/usr/local/airflow/plugins
-            - /Users/abhragupta/Documents/credentials:/usr/local/airflow/.aws/credentials:ro
+            - $HOME/.aws/credentials:/usr/local/airflow/.aws/credentials:ro
         ports:
             - "8080:8080"
         command: resetdb
