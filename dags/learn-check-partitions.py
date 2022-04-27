@@ -14,7 +14,7 @@ from airflow.operators.email import EmailOperator
 from airflow.utils.trigger_rule import TriggerRule
 # env_name = Variable.get("deploy_environment")
 
-
+boto3.setup_default_session(profile_name='biqamfa')
 s3 = boto3.resource('s3')
 # env_name = Variable.get("deploy_environment")
 

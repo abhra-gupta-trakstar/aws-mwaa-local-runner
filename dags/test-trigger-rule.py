@@ -43,7 +43,7 @@ default_args = {
 }
 
 dag = DAG(  
-    'TS-Learn-Check-Partitions-Daily',
+    'Test-Trigger-Rule',
     default_args=default_args,
     dagrun_timeout=timedelta(hours=2),
     schedule_interval='0 11 * * *'
