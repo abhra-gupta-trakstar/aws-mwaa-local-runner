@@ -3,6 +3,7 @@ boto3
 botocore
 
 # Replacement for the local package installs from CodeArtifact
+apache-airflow-providers-slack
 alembic==1.5.8
 amqp==2.6.1
 apache-airflow-providers-postgres[amazon]

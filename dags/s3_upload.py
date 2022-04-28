@@ -2,11 +2,25 @@ from datetime import datetime
 from airflow.models import DAG
 from airflow.operators.python import PythonOperator
 from airflow.hooks.S3_hook import S3Hook
+import boto3
 
 
 def upload_to_s3(filename: str, key: str, bucket_name: str) -> None:
-    hook = S3Hook('s3_conn')
-    hook.load_file(filename=filename, key=key, bucket_name=bucket_name)
+    session = boto3.session.Session(profile_name='biqamfa')
+    s3 = session.resource('s3')
+
+    object = s3.Object('qa-abhra', 'file_name.txt')
+
+    result = object.put(Body=open('/usr/local/airflow/file_name.txt', 'rb'))
+
+    res = result.get('ResponseMetadata')
+
+    if res.get('HTTPStatusCode') == 200:
+        print('File Uploaded Successfully')
+    else:
+        print('File Not Uploaded')
+    # hook = S3Hook('s3_conn')
+    # hook.load_file(filename=filename, key=key, bucket_name=bucket_name)
 
 
 with DAG(
