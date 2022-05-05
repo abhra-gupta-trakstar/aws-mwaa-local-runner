@@ -65,9 +65,9 @@ stop_DAG = DummyOperator(task_id='stop_DAG', dag=dag)
 send_email_notification = EmailOperator(
         task_id="send_Email",
         trigger_rule='one_success',
-        to=["abhra.gupta@trakstar.com", "brian.kasen@trakstar.com"],
+        to=["abhra.gupta@trakstar.com"],
         subject='{}'.format(dag_name),
-        html_content="{} DAG has failed".format(dag_name),
+        html_content="{} DAG has failed in {}".format(dag_name, env_name ),
         dag=dag
     )
 
