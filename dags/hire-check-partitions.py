@@ -10,6 +10,7 @@ import boto3
 from airflow.operators.python import PythonOperator
 from airflow.operators.dummy import DummyOperator
 from airflow.operators.email import EmailOperator
+from airflow.utils.trigger_rule import TriggerRule
 from airflow.providers.slack.operators.slack_webhook import SlackWebhookOperator
 from common.insights_lib import send_slack_message, send_email_message
 
@@ -38,7 +39,7 @@ default_args = {
     'retry_delay': timedelta(minutes=2),
     'provide_context': True,
     'email': email_recipients_list,
-    'email_on_failure': False,
+    'email_on_failure': True,
     'email_on_retry': False
 }
 
@@ -46,36 +47,20 @@ dag = DAG(
     dag_name,
     default_args=default_args,
     dagrun_timeout=timedelta(hours=2),
-    schedule_interval='0 11 * * *'
+    schedule_interval='10 11 * * *'
 )
 
-
-
-# s3_sensor_1 = S3PrefixSensor(  
-#   task_id='s3_sensor_11',  
-#   bucket_name=S3_BUCKET_NAME,  
-#   prefix='processed/ts-perform/trakstar/employee_plans/ingest_year=2022/ingest_month=01/ingest_day=11/',  
-#   dag=dag  
-# )
-
-# s3_sensor_2 = S3PrefixSensor(  
-#   task_id='s3_sensor_15',  
-#   bucket_name=S3_BUCKET_NAME,  
-#   prefix='processed/ts-perform/trakstar/employee_plans/ingest_year=2022/ingest_month=01/ingest_day=15/',  
-#   dag=dag  
-# )
-
-# echo_date = BashOperator(task_id='echo_date', bash_command="echo " + EXEC_DATE, dag=dag)
-# echo_year = BashOperator(task_id='echo_year', bash_command="echo " + EXEC_YEAR, dag=dag)
-# echo_month = BashOperator(task_id='echo_month', bash_command="echo " + EXEC_MONTH, dag=dag)
-# echo_day = BashOperator(task_id='echo_day', bash_command="echo " + EXEC_DAY, dag=dag)
 
 appraisals_table_partition_check_begin = DummyOperator(task_id='appraisals_table_partition_check_begin', dag=dag)
 opening_table_partition_check_begin = DummyOperator(task_id='opening_table_partition_check_begin', dag=dag)
 user_manager_table_partition_check_begin = DummyOperator(task_id='user_manager_table_partition_check_begin', dag=dag)
+cold_table_partition_check_begin = DummyOperator(task_id='cold_table_partition_check_begin', dag=dag)
+
 appraisals_table_partition_check_end = DummyOperator(task_id='appraisals_table_partition_check_end', dag=dag)
 opening_table_partition_check_end = DummyOperator(task_id='opening_table_partition_check_end', dag=dag)
 user_manager_table_partition_check_end = DummyOperator(task_id='user_manager_table_partition_check_end', dag=dag)
+cold_table_partition_check_end = DummyOperator(task_id='cold_table_partition_check_end', trigger_rule=TriggerRule.ALL_DONE, dag=dag)
+
 
 def folder_exists_and_not_empty(bucket, path) -> bool:
     '''
@@ -95,7 +80,6 @@ def folder_exists_and_not_empty(bucket, path) -> bool:
 
 candidate_table = [
     'candidate_candidatejobrelevance'
-    ,'candidate_candidatestate'
     ,'candidate_candidatestatelog'
     ,'candidate_candidatestatemetadata'
     ,'candidate_review_review'
@@ -120,23 +104,27 @@ opening_table = [
     ,'dapp_openings_stagemovementlog'
     ,'dapp_openings_openingstage'
     ,'opening_offerstage'
-    ,'opening_openingstate'
     ,'opening_openingstatechangelog'
 ]
 
 user_manager_table = [
     'analytics_logintracker'
     ,'auth_user'
-    ,'UserManager_client_candidatesourcetypes'
     ,'UserManager_userroles'
     ,'UserManager_roles'
     ,'UserManager_clientattritiondetails'
-    ,'UserManager_pricingplan'
     ,'UserManager_client'
     ,'UserManager_clientsettings'
-    ,'UserManager_useremail'
     ,'UserManager_userprofile'
     ,'UserManager_client_candidatesources'
+]
+
+cold_tables = [
+    'candidate_candidatestate'
+    , 'opening_openingstate'
+    , 'UserManager_client_candidatesourcetypes'
+    , 'UserManager_pricingplan'
+    , 'UserManager_useremail'
 ]
 
 # def _get_message(action, table_list) -> str:
@@ -239,6 +227,11 @@ for table in user_manager_table:
     full_path = path_prefix + "{}/ingest_year={}/ingest_month={}/ingest_day={}/".format(table, current_year, current_month, current_day)
     python_task  = PythonOperator(task_id='find_partition_{}'.format(table), python_callable=folder_exists_and_not_empty, op_args=[S3_BUCKET_NAME, full_path ], dag=dag)
     user_manager_table_partition_check_begin >> python_task >> user_manager_table_partition_check_end
+
+for table in cold_tables:
+    full_path = path_prefix + "{}/ingest_year={}/ingest_month={}/ingest_day={}/".format(table, current_year, current_month, current_day)
+    python_task  = PythonOperator(task_id='find_partition_{}'.format(table), python_callable=folder_exists_and_not_empty, op_args=[S3_BUCKET_NAME, full_path ], dag=dag)
+    cold_table_partition_check_begin >> python_task >> cold_table_partition_check_end
 
 appraisals_table_partition_check_end >> send_slack_success_notification_appraisals_table >> send_slack_failure_notification_appraisals_table >> send_email_notification_appraisals_table
 opening_table_partition_check_end >> send_slack_success_notification_opening_table >> send_slack_failure_notification_opening_table >> send_email_notification_opening_table
